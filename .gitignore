@@ -1,17 +1,35 @@
-.eunit
-*.o
-*.beam
-*.plt
-erl_crash.dump
-.concrete/DEV_MODE
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# rebar 2.x
-.rebar
-rel/example_project
-ebin/*.beam
-deps
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
 
-# rebar 3
-.rebar3
-_build/
-_checkouts/
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
