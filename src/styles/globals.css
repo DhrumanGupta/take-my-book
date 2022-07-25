@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@300;400;500;600&display=swap');
+
+@layer base {
+  h1 {
+    @apply text-2xl font-semibold;
+  }
+
+  h2 {
+    @apply text-lg font-semibold;
+  }
+}
+
+@layer components {
+  .gray-section {
+    @apply bg-gray-light;
+  }
+
+  .gray-section p {
+    @apply text-gray-dark;
+  }
+
+  .container-custom {
+    @apply container mx-auto w-10/12 lg:w-9/12;
+  }
+}
+
+html,
+body {
+  font-family: 'DM Serif Display', serif;
+  font-family: 'Inter', sans-serif;
+  @apply bg-white;
+}
+
+#__next {
+  @apply min-h-screen;
+}
+
+a {
+  @apply text-blue underline;
+}
+
+* {
+  box-sizing: border-box;
+}
