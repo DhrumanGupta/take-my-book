@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id                  String     @id @default(cuid())
+  email               String     @unique
+  passwordHash        String
+  salt                String
+  phoneNo             String
+  role                Role       @default(USER)
+  profileUrl          String
+  name                String
+  listings            Book[]
+  chatSessions        ChatSessionUser[]
+}
+
+model Book {
+  id                  String     @id @default(cuid())
+  title               String
+  isbn                String?
+  description         String
+  listedById          String
+  price               Int?
+  listedBy            User       @relation(fields: [listedById], references: [id])
+  pictures            BookPicture[]
+}
+
+model BookPicture {
+  id                  String     @id @default(cuid())
+  bookId              String
+  book                Book       @relation(fields: [bookId], references: [id])
+  url                 String
+}
+
+model ChatSessionUser {
+  id                  String     @id @default(cuid())
+  chatSessionId       String
+  userId              String
+  chatSession         ChatSession @relation(fields: [chatSessionId], references: [id])
+  user                User       @relation(fields: [userId], references: [id])
+  messages            ChatMessage[]
+}
+
+model ChatSession {
+  id                  String     @id @default(cuid())
+  users               ChatSessionUser[]
+  messages            ChatMessage[]
+}
+
+model ChatMessage {
+  id                  String     @id @default(cuid())
+  senderId            String
+  sender              ChatSessionUser       @relation(fields: [senderId], references: [id])
+  sessionId           String
+  session             ChatSession @relation(fields: [sessionId], references: [id])
+  content             String
+  createdAt           DateTime   @default(now())
+}
