@@ -1,0 +1,10 @@
+version: '2'
+services:
+  database:
+    image: 'postgres:13'
+    environment:
+      - POSTGRES_USER=berlm
+      - POSTGRES_PASSWORD=berlm
+      - POSTGRES_DB=takemybook_db
+    ports:
+      - '5432:5432'

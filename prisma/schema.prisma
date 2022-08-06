@@ -20,9 +20,8 @@ model User {
   email               String     @unique
   passwordHash        String
   salt                String
-  phoneNo             String
+  phoneNo             String?
   role                Role       @default(USER)
-  profileUrl          String
   name                String
   listings            Book[]
   chatSessions        ChatSessionUser[]
@@ -56,10 +55,10 @@ model ChatSessionUser {
 }
 
 model ChatSession {
-  id                  String     @id @default(cuid())
-  users               ChatSessionUser[]
-  messages            ChatMessage[]
-}
+  id                  String     @id @default(cuid()) 
+  users               ChatSessionUser[] 
+  messages            ChatMessage[] 
+} 
 
 model ChatMessage {
   id                  String     @id @default(cuid())
