@@ -1,4 +1,4 @@
-import {User} from '@prisma/client'
+import { User } from "types/DTOs";
 
 /**
  * Generates the profile path of a user
@@ -6,5 +6,5 @@ import {User} from '@prisma/client'
  * @returns The profile path of the given user
  */
 const getProfilePath = (user: User) => {
-  return `${user.email.replace(/  +/g, '-')}--${user.id}`
-}
+  return `${user.email.replace(/  +/g, "-")}--${user.id}`;
+};

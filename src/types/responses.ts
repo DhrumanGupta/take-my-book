@@ -1,5 +1,7 @@
-export interface Error {
+interface Error {
   msg: string;
 }
 
-export type ErrorFallback<T> = Error | T;
+type ErrorFallback<T> = Error | T;
+
+export type { Error, ErrorFallback };

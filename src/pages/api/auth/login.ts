@@ -1,12 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { withIronSessionApiRoute } from "iron-session/next";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "lib/db";
 import { User } from "types/DTOs";
-import { ErrorFallback } from "types/responses";
-import { sessionOptions } from "lib/sesion";
+import type { ErrorFallback } from "types/responses";
 import { verifyPassword } from "lib/crypto";
-
-const prisma = new PrismaClient();
+import { withSessionRoute } from "lib/sesion";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
@@ -40,15 +37,17 @@ const handler = async (
   const dto = {
     name: user.name,
     email: user.email,
+    id: user.id,
+    role: user.role,
   };
 
   req.session.user = dto;
   await req.session.save();
 
-  res.status(201).send({
+  res.status(200).send({
     msg: "Login succesful",
     user: dto,
   });
 };
 
-export default withIronSessionApiRoute(handler, sessionOptions);
+export default withSessionRoute(handler);

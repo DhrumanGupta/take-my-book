@@ -1,12 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "lib/db";
 import Joi from "joi";
 import validate from "lib/middlewares/validate";
 import { User } from "types/DTOs";
-import { ErrorFallback } from "types/responses";
 import { generateHashWithSalt } from "lib/crypto";
-
-const prisma = new PrismaClient();
+import type { ErrorFallback } from "types/responses";
+import { withSessionRoute } from "lib/sesion";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
   body: {
@@ -50,10 +49,17 @@ const handler = async (
     select: {
       email: true,
       name: true,
+      id: true,
+      role: true,
     },
   });
+
+  req.session.user = user;
+  await req.session.save();
 
   res.status(201).send(user);
 };
 
-export default validate({ body: schema }, handler);
+export default validate({ body: schema }, async (req, res) => {
+  return await withSessionRoute(handler)(req, res);
+});

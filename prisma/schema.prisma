@@ -18,6 +18,7 @@ enum Role {
 model User {
   id                  String     @id @default(cuid())
   email               String     @unique
+  verified            Boolean    @default(false)
   passwordHash        String
   salt                String
   phoneNo             String?
@@ -30,11 +31,13 @@ model User {
 model Book {
   id                  String     @id @default(cuid())
   title               String
-  isbn                String?
+  isbn                String
   description         String
   listedById          String
-  price               Int?
+  price               Int
   listedBy            User       @relation(fields: [listedById], references: [id])
+  listedOn            DateTime   @default(now())
+  featuredPicture     String
   pictures            BookPicture[]
 }
 

@@ -1,11 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import { withIronSessionApiRoute } from "iron-session/next";
-import { PrismaClient } from "@prisma/client";
-import { sessionOptions } from "lib/sesion";
+import { withSessionRoute } from "lib/sesion";
+import type { NextApiHandler } from "next";
 
-const prisma = new PrismaClient();
-
-const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+const handler: NextApiHandler = async (req, res) => {
   if (req.method !== "POST") {
     res.status(405).send({ msg: "Only POST requests allowed" });
     return;
@@ -15,4 +11,4 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   res.status(200).send({});
 };
 
-export default withIronSessionApiRoute(handler, sessionOptions);
+export default withSessionRoute(handler);
