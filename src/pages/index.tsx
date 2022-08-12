@@ -1,12 +1,12 @@
-import type {NextPage} from 'next'
-import Image from 'next/image'
-import Link from 'next/link'
-import Card from '../components/Card'
-import InfoCard from '../components/home/InfoCard'
-import Message from '../components/icons/Message'
-import Search from '../components/icons/Search'
-import Verified from '../components/icons/Verified'
-import MetaDecorator from '../components/MetaDecorator'
+import type { NextPage } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import Card from "components/Card";
+import InfoCard from "components/home/InfoCard";
+import Message from "components/icons/Message";
+import Search from "components/icons/Search";
+import Verified from "components/icons/Verified";
+import MetaDecorator from "components/MetaDecorator";
 
 const Home: NextPage = () => {
   return (
@@ -67,7 +67,7 @@ const Home: NextPage = () => {
         </div>
       </section>
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;

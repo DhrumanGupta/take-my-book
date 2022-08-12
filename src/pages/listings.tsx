@@ -1,11 +1,11 @@
 import type { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import InfoCard from "../components/home/InfoCard";
-import Message from "../components/icons/Message";
-import Search from "../components/icons/Search";
-import Verified from "../components/icons/Verified";
-import MetaDecorator from "../components/MetaDecorator";
+import InfoCard from "components/home/InfoCard";
+import Message from "components/icons/Message";
+import Search from "components/icons/Search";
+import Verified from "components/icons/Verified";
+import MetaDecorator from "components/MetaDecorator";
 
 const Home: NextPage = () => {
   return (

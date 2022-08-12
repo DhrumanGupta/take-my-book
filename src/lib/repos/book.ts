@@ -4,16 +4,23 @@ import type { Book } from "types/DTOs";
 
 type BookWithPictures = Prisma.BookGetPayload<{ include: { pictures: true } }>;
 
+interface PriceRange {
+  low: number;
+  high: number;
+}
+
 interface GetBookProps {
   cursor?: string;
   isbn?: string;
   search?: string;
+  priceRange?: PriceRange;
 }
 
 async function getBooks({
   cursor,
   isbn,
   search,
+  priceRange,
 }: GetBookProps): Promise<Book[]> {
   const query: Parameters<typeof prisma.book.findMany>[0] = {
     take: 20,
@@ -44,6 +51,16 @@ async function getBooks({
     };
   }
 
+  if (priceRange && priceRange.high > priceRange.low && priceRange.low >= 0) {
+    query.where = {
+      ...query.where,
+      price: {
+        gte: priceRange.low,
+        lte: priceRange.high,
+      },
+    };
+  }
+
   const books = (await prisma.book.findMany(query)) as BookWithPictures[];
   const transformed = books.map((book) => ({
     id: book.id,
@@ -59,7 +76,11 @@ async function getBooks({
   return transformed;
 }
 
-async function getBook({ id }: { id: string }): Promise<Book> {
+async function getBook({ id }: { id: string }): Promise<Book | null> {
+  if (!id) {
+    return null;
+  }
+
   const book = (await prisma.book.findFirst({
     where: { id },
     include: {
@@ -71,6 +92,10 @@ async function getBook({ id }: { id: string }): Promise<Book> {
     },
   })) as BookWithPictures;
 
+  if (!book) {
+    return null;
+  }
+
   const transformed = {
     id: book.id,
     title: book.title,
@@ -79,7 +104,6 @@ async function getBook({ id }: { id: string }): Promise<Book> {
     price: book.price,
     featuredPicture: book.featuredPicture,
     listedOn: book.listedOn,
-
     pictures: book.pictures.map((picture) => picture.url),
   };
 

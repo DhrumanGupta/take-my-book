@@ -18,7 +18,8 @@
     "paths": {
       "lib/*": ["./src/lib/*"],
       "pages/*": ["./src/pages/*"],
-      "types/*": ["./src/types/*"]
+      "types/*": ["./src/types/*"],
+      "components/*": ["./src/components/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "next.config.js"],

@@ -7,6 +7,8 @@ interface ExtendedNextApiRequest extends NextApiRequest {
     cursor?: string;
     isbn?: string;
     search?: string;
+    priceLow?: string;
+    priceHigh?: string;
   };
 }
 
@@ -14,8 +16,22 @@ const getBooks = async (
   req: ExtendedNextApiRequest,
   res: NextApiResponse<Book[]>
 ) => {
-  const { cursor, isbn, search } = req.query;
-  const books = await getBooksFromDb({ cursor, isbn, search });
+  const { cursor, isbn, search, priceHigh, priceLow } = req.query;
+
+  let high: number | undefined;
+  let low: number | undefined;
+
+  if (Number.isInteger(priceHigh) && Number.isInteger(priceLow)) {
+    high = parseInt(priceHigh || "-1");
+    low = parseInt(priceLow || "-1");
+  }
+
+  const books = await getBooksFromDb({
+    cursor,
+    isbn,
+    search,
+    priceRange: high && low ? { high, low } : undefined,
+  });
   return res.status(200).send(books);
 };
 
