@@ -18,7 +18,11 @@ interface ExtendedNextApiRequest extends NextApiRequest {
 const schema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).max(32).required(),
-  name: Joi.string().min(6).max(32).required(),
+  name: Joi.string()
+    .regex(/^[a-zA-Z ]*$/gm)
+    .min(6)
+    .max(32)
+    .required(),
 });
 
 const handler = async (
