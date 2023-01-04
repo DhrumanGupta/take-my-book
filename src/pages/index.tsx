@@ -11,7 +11,7 @@ import MetaDecorator from "components/MetaDecorator";
 const Home: NextPage = () => {
   return (
     <>
-      <MetaDecorator description="BorrowMyBooks is a one-stop application for finding and listing IB-MYP and IBDP books. BorrowMyBooks simplifies the entire process and streamlines communication so you can find and list books faster." />
+      <MetaDecorator description="BorrowMyBooks is a one-stop application for finding and listing IBMYP and IBDP books. BorrowMyBooks simplifies the entire process and streamlines communication so you can find and list books faster." />
       <main className="container-custom grid grid-cols-1 pt-6 md:py-2 lg:pt-12 lg:pb-24 md:grid-cols-2">
         <div className="flex flex-col align-center justify-center">
           <h1 className="mb-1">Don&apos;t buy, borrow</h1>
@@ -36,7 +36,7 @@ const Home: NextPage = () => {
           <h1>What is BorrowMyBooks?</h1>
           <p className="md:max-w-xl lg:max-w-2xl">
             BorrowMyBooks is a one-stop application for finding and listing
-            IB-MYP and IBDP books. BorrowMyBooks simplifies the entire process
+            IBMYP and IBDP books. BorrowMyBooks simplifies the entire process
             and streamlines communication so you can find and list books faster.
           </p>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">

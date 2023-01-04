@@ -26,6 +26,10 @@
   .container-custom {
     @apply container mx-auto w-10/12 lg:w-9/12;
   }
+
+  .mobile-navbar-item {
+    @apply text-gray-dark duration-100 hover:cursor-pointer hover:bg-gray-light no-underline p-4 border-b border-gray-dark;
+  }
 }
 
 html,

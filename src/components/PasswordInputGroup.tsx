@@ -7,7 +7,7 @@ interface IProps<T> {
   label: string;
   value: T;
   hidden: boolean;
-  setHidden: (value: boolean) => void;
+  toggleHidden: () => void;
   setValue: (value: T) => void;
 }
 
@@ -17,7 +17,7 @@ const PasswordInputGroup = <T extends unknown>({
   setValue,
   placeholder,
   hidden,
-  setHidden,
+  toggleHidden,
 }: IProps<T> & { children?: ReactNode }) => {
   return (
     <>
@@ -30,8 +30,14 @@ const PasswordInputGroup = <T extends unknown>({
           type={hidden ? "password" : "text"}
           id={label}
           className="p-2 bg-gray-light flex-grow rounded"
+          onChange={(e) => setValue(e.target.value as T)}
+          value={value as string | undefined}
         />
-        <button className="m-2">
+        <button
+          className="p-3 hover:cursor-pointer"
+          type="button"
+          onClick={toggleHidden}
+        >
           {hidden ? (
             <EyeHidden className="w-4 h-auto" />
           ) : (

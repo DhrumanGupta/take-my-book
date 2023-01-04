@@ -18,10 +18,18 @@
     "paths": {
       "lib/*": ["./src/lib/*"],
       "pages/*": ["./src/pages/*"],
+      "hooks/*": ["./src/hooks/*"],
+      "data/*": ["./src/data/*"],
       "types/*": ["./src/types/*"],
       "components/*": ["./src/components/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "next.config.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "next.config.js",
+    "src/components/UI/Loading.jsx"
+  ],
   "exclude": ["node_modules"]
 }

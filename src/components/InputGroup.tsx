@@ -24,6 +24,8 @@ const InputGroup = <T extends unknown>({
         placeholder={placeholder}
         type={type ? type : typeof value}
         id={label}
+        value={value as string | undefined}
+        onChange={(e) => setValue(e.target.value as T)}
         className="bg-gray-light text-md p-2 rounded"
       />
     </>
