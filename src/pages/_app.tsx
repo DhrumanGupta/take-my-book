@@ -1,15 +1,37 @@
 import "../styles/globals.css";
 import "../styles/app.css";
-import type { AppProps } from "next/app";
 import Navbar from "components/Navbar";
-import Head from "next/head";
+import { ProtectedPage, AnonymousPage } from "components/Auth";
+import { AppProps } from "next/app";
 
 function MyApp({ Component, pageProps }: AppProps) {
+  // @ts-ignore
+  const isProtected = Component.isProtected;
+  // @ts-ignore
+  const isAnonymous = Component.isAnonymous;
+
+  if (isProtected && isAnonymous) {
+    throw new Error(
+      `The component ${Component.name} is anonymous and protected as the same time. Please choose either one`
+    );
+  }
+
   return (
     <>
       <Navbar />
-      <Component {...pageProps} />
+      {isProtected && (
+        <ProtectedPage>
+          <Component {...pageProps} />
+        </ProtectedPage>
+      )}
+      {isAnonymous && (
+        <AnonymousPage>
+          <Component {...pageProps} />
+        </AnonymousPage>
+      )}
+      {!isAnonymous && !isProtected && <Component {...pageProps} />}
     </>
   );
 }
+
 export default MyApp;

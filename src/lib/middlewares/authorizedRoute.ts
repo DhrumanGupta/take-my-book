@@ -22,7 +22,7 @@ const authorizedRoute = (
 
     if (!user) {
       req.session.destroy();
-      return res.status(403).send({ msg: "Not logged in" });
+      return res.status(403).send({ code: 403, msg: "Not logged in" });
     }
 
     return handler(req, res, user);

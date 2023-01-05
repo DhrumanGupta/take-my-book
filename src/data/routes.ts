@@ -1,5 +1,7 @@
 //const env = process.env.NODE_ENV || "development";
 
+import { BookSearchProps } from "types/requests";
+
 //const domain = env === "development" ? "localhost:1337" : "backend.travelcheapwith.tech";
 //const basePath = `http${env !== "development" ? s : ""}://${domain}`;
 const basePath = "/api";
@@ -12,12 +14,20 @@ export const authRoutes = {
   user: `${authBaseRoute}/user`,
 };
 
-const petitionBaseRoute = `${basePath}/petition`;
-export const petitionRoutes = {
-  getFromId: (id: string) => `${petitionBaseRoute}/${id}`,
-  getAll: (query: string) => `${petitionBaseRoute}${query}`,
-  getUser: `${petitionBaseRoute}/user`,
-  create: `${petitionBaseRoute}/`,
-  sign: `${petitionBaseRoute}/sign`,
-  video: `${petitionBaseRoute}/videos`,
+const bookBaseRoute = `${basePath}/book`;
+export const bookRoutes = {
+  getFromId: (id: string) => `${bookBaseRoute}/${id}`,
+  getAll: (params: BookSearchProps) => {
+    Object.keys(params).forEach((key) => {
+      // @ts-ignore
+      if (params[key] === undefined) {
+        // @ts-ignore
+        delete params[key];
+      }
+    });
+
+    return `${bookBaseRoute}?${new URLSearchParams(params as any)}`;
+  },
+  create: `${bookBaseRoute}/`,
+  addImage: `${bookBaseRoute}/images`,
 };

@@ -19,7 +19,7 @@ const Home: NextPage = () => {
             Buying new books every year is expensive and wasteful. BorrowMyBooks
             allows you to find and coordinate book pickups from other students.
             Get started by <Link href="signup">signing up</Link>, or browsing
-            the <Link href="listings">current listings</Link>.
+            the <Link href="books">current listings</Link>.
           </p>
         </div>
         <div className="w-full h-96 md:h-112 relative">

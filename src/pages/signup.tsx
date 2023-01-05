@@ -7,12 +7,18 @@ import { Dispatch, FC } from "react";
 // import Message from "components/icons/Message";
 // import Search from "components/icons/Search";
 // import Verified from "components/icons/Verified";
+import Loading from "components/Loading";
 import { useReducer } from "react";
 import produce from "immer";
 import MetaDecorator from "components/MetaDecorator";
 import InputGroup from "components/InputGroup";
 import PasswordInputGroup from "components/PasswordInputGroup";
 import { PrimaryButton } from "components/Button";
+import { register, login } from "lib/apis/userApi";
+import useUser from "hooks/useUser";
+import type { User } from "types/DTOs";
+import { AxiosError } from "axios";
+import { Response } from "types/responses";
 
 const initialState: State = {
   state: "signup",
@@ -20,6 +26,10 @@ const initialState: State = {
     name: "",
     password: "",
     email: "",
+  },
+  request: {
+    loading: false,
+    error: undefined,
   },
   hidden: true,
 };
@@ -29,7 +39,8 @@ type ActionKind =
   | "toggleHidden"
   | "setEmail"
   | "setPassword"
-  | "setName";
+  | "setName"
+  | "setRequest";
 
 type Action = {
   type: ActionKind;
@@ -42,6 +53,10 @@ type State = {
     name: string;
     password: string;
     email: string;
+  };
+  request: {
+    loading: boolean;
+    error: AxiosError<Response<User>> | undefined;
   };
   hidden: boolean;
 };
@@ -70,6 +85,10 @@ const reducer = (state: State, action: Action): State => {
       return produce(state, (draft) => {
         draft.data.name = payload;
       });
+    case "setRequest":
+      return produce(state, (draft) => {
+        draft.request = payload;
+      });
     default:
       return state;
   }
@@ -92,8 +111,38 @@ const Home: NextPage = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const toggle = () => {
-    console.log("clicked");
+    // console.log("clicked");
     dispatch({ type: "changeSignUp" });
+  };
+
+  const { mutate } = useUser();
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      dispatch({
+        type: "setRequest",
+        payload: { loading: true, error: "" },
+      });
+
+      if (state.state === "signup") {
+        await register(state.data);
+      } else {
+        await login(state.data);
+      }
+
+      mutate(undefined);
+
+      dispatch({
+        type: "setRequest",
+        payload: { loading: false, error: "" },
+      });
+    } catch (err) {
+      dispatch({
+        type: "setRequest",
+        payload: { loading: false, error: err },
+      });
+    }
   };
 
   return (
@@ -103,7 +152,15 @@ const Home: NextPage = () => {
         description="BorrowMyBooks is a one-stop application for finding and listing IB-MYP and IBDP books. BorrowMyBooks simplifies the entire process and streamlines communication so you can find and list books faster."
       />
       <main className="container-custom flex flex-col h-[85vh] items justify">
+        {state.request.loading && <Loading style={{ marginTop: "5%" }} />}
+
         <div className="flex flex-col justify-center container-custom flex-grow">
+          {state.request.error && (
+            <p className="text-red text-center mb-4 font-bold text-lg">
+              {state.request.error.response?.data?.msg}
+            </p>
+          )}
+
           <h1>Create an account</h1>
           {state.state === "login" ? (
             <p>
@@ -115,7 +172,7 @@ const Home: NextPage = () => {
               Already have an account? <Toggle func={toggle}>Sign In.</Toggle>
             </p>
           )}
-          <form className="flex flex-col mt-4">
+          <form className="flex flex-col mt-4" onSubmit={onSubmit}>
             {state.state === "signup" && (
               <InputGroup
                 label="Name"
@@ -169,5 +226,8 @@ const Home: NextPage = () => {
     </>
   );
 };
+
+// @ts-ignore
+Home.isAnonymous = true;
 
 export default Home;

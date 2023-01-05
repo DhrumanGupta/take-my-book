@@ -1,17 +1,18 @@
 import useSWR, { KeyedMutator } from "swr";
-import { getUser } from "lib/userApi";
+import { getUser } from "lib/apis/userApi";
 import { authRoutes } from "data/routes";
 import { User } from "types/DTOs";
+import { Response } from "types/responses";
 
 type Data = {
   loading: boolean;
   loggedIn: boolean;
   user: User;
-  mutate: KeyedMutator<User | null>;
+  mutate: KeyedMutator<User | undefined>;
 };
 
 const useUser = (): Data => {
-  const { data, mutate, error } = useSWR<User | null>(
+  const { data, mutate, error } = useSWR<User | undefined>(
     authRoutes.user,
     getUser,
     {

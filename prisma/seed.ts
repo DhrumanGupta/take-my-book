@@ -97,41 +97,30 @@ async function main() {
     },
   ];
 
-  await Promise.all(
-    books.map((book) =>
-      prisma.book.create({
-        data: {
-          title: book.title,
-          isbn: Math.random().toString(36).slice(2).toUpperCase(),
-          description: book.description,
-          price: book.price,
-          listedById: book.listedBy.id,
-          featuredPicture: book.pictures[0],
-          pictures: {
-            create: book.pictures.map((url) => ({ url })),
+  const createBooks = async () => {
+    await Promise.all(
+      books.map((book) =>
+        prisma.book.create({
+          data: {
+            title: book.title,
+            isbn: Math.random().toString(36).slice(2).toUpperCase(),
+            description: book.description,
+            price: book.price,
+            listedById: book.listedBy.id,
+            featuredPicture: book.pictures[0],
+            pictures: {
+              create: book.pictures.map((url) => ({ url })),
+            },
           },
-        },
-      })
-    )
-  );
-
-  await Promise.all(
-    books.map((book) =>
-      prisma.book.create({
-        data: {
-          title: book.title,
-          isbn: Math.random().toString(36).slice(2).toUpperCase(),
-          description: book.description,
-          price: book.price,
-          listedById: book.listedBy.id,
-          featuredPicture: book.pictures[0],
-          pictures: {
-            create: book.pictures.map((url) => ({ url })),
-          },
-        },
-      })
-    )
-  );
+        })
+      )
+    );
+  };
+  
+  await createBooks();
+  await createBooks();
+  await createBooks();
+  await createBooks();
 }
 
 main()

@@ -4,33 +4,27 @@ import Joi from "joi";
 import validate from "lib/middlewares/validate";
 import { User } from "types/DTOs";
 import { generateHashWithSalt } from "lib/crypto";
-import type { ErrorFallback } from "types/responses";
+import type { ApiResponse } from "types/responses";
 import { withSessionRoute } from "lib/sesion";
+import { UserSignupProps } from "types/requests";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
-  body: {
-    email: string;
-    password: string;
-    name: string;
-  };
+  body: UserSignupProps;
 }
 
 const schema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().min(8).max(32).required(),
   name: Joi.string()
-    .regex(/^[a-zA-Z ]*$/gm)
+    .regex(/^[a-zA-Z ]*$/m)
     .min(6)
     .max(32)
     .required(),
 });
 
-const handler = async (
-  req: ExtendedNextApiRequest,
-  res: NextApiResponse<ErrorFallback<User>>
-) => {
+const handler = async (req: ExtendedNextApiRequest, res: ApiResponse<User>) => {
   if (req.method !== "POST") {
-    res.status(405).send({ msg: "Only POST requests allowed" });
+    res.status(405).send({ code: 405, msg: "Only POST requests allowed" });
     return;
   }
 
@@ -38,7 +32,9 @@ const handler = async (
 
   const userExists = await prisma.user.count({ where: { email } });
   if (Boolean(userExists)) {
-    return res.status(409).send({ msg: "Account with email already exists" });
+    return res
+      .status(409)
+      .send({ code: 409, msg: "Account with email already exists" });
   }
 
   const { salt, hash } = generateHashWithSalt(password);
@@ -61,7 +57,11 @@ const handler = async (
   req.session.user = user;
   await req.session.save();
 
-  res.status(201).send(user);
+  res.status(201).send({
+    code: 201,
+    msg: "sucess",
+    data: user,
+  });
 };
 
 export default validate({ body: schema }, async (req, res) => {

@@ -1,18 +1,17 @@
 import { Book } from "types/DTOs";
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest } from "next";
 import { getBook as getBookFromDB } from "lib/repos/book";
-import { ErrorFallback } from "types/responses";
+import { ApiResponse } from "types/responses";
 
-const getBook = async (
-  req: NextApiRequest,
-  res: NextApiResponse<ErrorFallback<Book>>
-) => {
+const getBook = async (req: NextApiRequest, res: ApiResponse<Book>) => {
   const { id } = req.query as { id: string };
   const book = await getBookFromDB({ id });
+
   if (!book) {
-    return res.status(404).send({ msg: "Not Found" });
+    return res.status(404).send({ code: 404, msg: "Not Found" });
   }
-  return res.status(200).send(book);
+
+  return res.status(200).send({ code: 200, msg: "success", data: book });
 };
 
 export default getBook;

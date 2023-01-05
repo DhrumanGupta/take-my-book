@@ -1,23 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "lib/db";
 import { User } from "types/DTOs";
-import type { ErrorFallback } from "types/responses";
+import type { ApiResponse } from "types/responses";
 import { verifyPassword } from "lib/crypto";
 import { withSessionRoute } from "lib/sesion";
+import { UserLoginProps } from "types/requests";
 
 interface ExtendedNextApiRequest extends NextApiRequest {
-  body: {
-    email: string;
-    password: string;
-  };
+  body: UserLoginProps;
 }
 
-const handler = async (
-  req: ExtendedNextApiRequest,
-  res: NextApiResponse<ErrorFallback<{ user: User; msg: string }>>
-) => {
+const handler = async (req: ExtendedNextApiRequest, res: ApiResponse<User>) => {
   if (req.method !== "POST") {
-    res.status(405).send({ msg: "Only POST requests allowed" });
+    res.status(405).send({ code: 405, msg: "Only POST requests allowed" });
     return;
   }
 
@@ -25,13 +20,13 @@ const handler = async (
 
   const user = await prisma.user.findFirst({ where: { email } });
   if (!user) {
-    return res.status(403).send({ msg: "Invalid credentials" });
+    return res.status(403).send({ code: 403, msg: "Invalid credentials" });
   }
 
   const passwordMatch = verifyPassword(password, user.passwordHash, user.salt);
 
   if (!passwordMatch) {
-    return res.status(403).send({ msg: "Invalid credentials" });
+    return res.status(403).send({ code: 403, msg: "Invalid credentials" });
   }
 
   const dto = {
@@ -45,8 +40,9 @@ const handler = async (
   await req.session.save();
 
   res.status(200).send({
+    code: 200,
     msg: "Login succesful",
-    user: dto,
+    data: dto,
   });
 };
 

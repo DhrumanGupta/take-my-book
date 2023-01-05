@@ -14,7 +14,7 @@ import {
 } from "@reach/menu-button";
 import useUser from "hooks/useUser";
 import { PrimaryButton } from "./Button";
-import { logout } from "lib/userApi";
+import { logout } from "lib/apis/userApi";
 import { AnimatePresence, motion } from "framer-motion";
 
 type Route = {
@@ -25,7 +25,7 @@ type Route = {
 
 const ROUTES: Route[] = [
   {
-    path: "/listings",
+    path: "/books",
     label: "Browse Listings",
   },
 ];
@@ -40,11 +40,15 @@ const ANONYMOUS_ROUTES: Route[] = [
 
 const PROTECTED_ROUTES: Route[] = [
   {
+    path: "/me",
+    label: "My Account",
+  },
+  {
     path: "/chat",
     label: "Chat",
   },
   {
-    path: "/create-listing",
+    path: "/books/create",
     label: "Create Listing",
     primary: true,
   },
@@ -118,7 +122,7 @@ const MobileMenuList: FC = () => {
             <MenuItems className="flex flex-col b-0">
               <Link href={"/"}>
                 <MenuLink as={"a"} className="mobile-navbar-item">
-                  Take my Books
+                  Home
                 </MenuLink>
               </Link>
 

@@ -1,7 +1,17 @@
-interface Error {
+import { NextApiResponse } from "next";
+import { Book } from "./DTOs";
+
+interface Response<T> {
+  code: Number;
   msg: string;
+  data?: T;
 }
 
-type ErrorFallback<T> = Error | T;
+interface BookQueryResult {
+  books: Book[];
+  nextCursor?: string;
+}
 
-export type { Error, ErrorFallback };
+type ApiResponse<T = void> = NextApiResponse<Response<T>>;
+
+export type { Response, ApiResponse, BookQueryResult };
