@@ -30,7 +30,14 @@ interface BookUploadImageProps {
   type: string;
 }
 
+interface ClientRequestState<T> {
+  data?: T;
+  loading: boolean;
+  error?: string;
+}
+
 export type {
+  ClientRequestState,
   BookUploadImageProps,
   UserSignupProps,
   UserLoginProps,

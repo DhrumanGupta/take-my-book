@@ -95,6 +95,7 @@ async function getBooks({
       };
     }
   }
+  console.log(query);
   const books = (await prisma.book.findMany(query)) as BookWithPictures[];
   let last = undefined;
   if (books.length > 20) {

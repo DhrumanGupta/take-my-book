@@ -26,8 +26,10 @@ function BookListingCard({
           </div>
         </div>
 
-        <h3 className="mt-1 font-semibold text-lg">{title}</h3>
-        <p className="text-gray-dark text-sm">{isbn}</p>
+        <h3 className="mt-1 font-semibold text-lg">
+          {title} <span className="ml-1 text-gray-dark text-sm">({isbn})</span>
+        </h3>
+        <p>{price > 0 ? `Rs. ${price}` : "Free"}</p>
       </a>
     </Link>
   );

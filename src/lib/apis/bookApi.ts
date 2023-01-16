@@ -68,7 +68,15 @@ const uploadImages = async (files: File[]): Promise<string[]> => {
   const data = resp.data.data!;
 
   for (let i = 0; i < files.length; i++) {
-    await axios.put(data[i].url, files[i], {
+    const formData = new FormData();
+
+    Object.entries({ ...data[i].fields, file: files[i] }).forEach(
+      ([key, value]) => {
+        formData.append(key, value as string);
+      }
+    );
+
+    await axios.post(data[i].url, formData, {
       headers: {
         "Content-Type": files[i].type,
         "Access-Control-Allow-Origin": "*",

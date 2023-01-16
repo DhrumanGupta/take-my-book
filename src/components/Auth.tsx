@@ -12,12 +12,12 @@ function ProtectedPage({ children }: Props) {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && loggedIn) {
+    if (!loading && !loggedIn) {
       router.replace("/");
     }
   }, [loggedIn, loading, router]);
 
-  if (loading || loggedIn) {
+  if (loading || !loggedIn) {
     return (
       <div className="absolute bottom-1/2 right-1/2 translate-x-1/2 translate-y-1/2">
         <Loading />
