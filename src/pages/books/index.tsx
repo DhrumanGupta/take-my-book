@@ -148,7 +148,7 @@ const BookList = ({ params }: { params: BookSearchProps }) => {
 
   return (
     <>
-      {data!.length <= 0 && (
+      {data![0]!.books?.length <= 0 && (
         <p className="text-gray-dark text-center absolute left-1/2 bottom-1/2 -translate-x-1/2 -translate-y-1/2">
           Wow, such empty
         </p>

@@ -25,9 +25,10 @@ function transformBook(book: BookWithPictures): Book {
     isbn: book.isbn,
     description: book.description,
     price: book.price,
-    featuredPicture: book.featuredPicture,
+    featuredPicture: book.featuredPicture || "",
     listedOn: book.listedOn,
     pictures: book.pictures.map((picture) => picture.url),
+    listedById: book.listedById,
   };
 }
 
@@ -41,6 +42,11 @@ async function getBooks({
     take: 21,
     orderBy: {
       listedOn: "desc",
+    },
+    where: {
+      featuredPicture: {
+        not: null,
+      },
     },
     include: {
       pictures: {
@@ -95,7 +101,7 @@ async function getBooks({
       };
     }
   }
-  console.log(query);
+  // console.log(query);
   const books = (await prisma.book.findMany(query)) as BookWithPictures[];
   let last = undefined;
   if (books.length > 20) {
@@ -140,7 +146,7 @@ interface CreateBookProps {
   description: string;
   listedById: string;
   price: number;
-  pictures: string[]; // urls
+  pictures?: string[]; // urls
 }
 
 async function createBook({
@@ -151,28 +157,41 @@ async function createBook({
   price,
   pictures,
 }: CreateBookProps): Promise<Book | undefined> {
-  if (pictures.length <= 0) {
-    throw new Error("No pictures provided");
-  }
-
-  const book = (await prisma.book.create({
+  const data: Prisma.BookCreateArgs = {
     data: {
       title,
       isbn,
       description,
       listedBy: { connect: { id: listedById } },
       price,
-      featuredPicture: pictures[0],
-      pictures: {
-        create: pictures.map((url) => ({ url })),
-      },
     },
-    select: {
+    include: {
       pictures: true,
     },
-  })) as BookWithPictures;
+  };
+
+  if (pictures) {
+    data.data.featuredPicture = pictures[0];
+    data.data.pictures = {
+      create: pictures.map((url) => ({ url })),
+    };
+  }
+
+  const book = (await prisma.book.create(data)) as BookWithPictures;
 
   return transformBook(book);
 }
 
-export { getBooks, getBook, createBook };
+async function addImage({ id, url }: { id: string; url: string }) {
+  await prisma.book.update({
+    where: { id },
+    data: {
+      pictures: {
+        create: { url },
+      },
+      featuredPicture: url,
+    },
+  });
+}
+
+export { getBooks, getBook, createBook, addImage };

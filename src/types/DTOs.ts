@@ -12,6 +12,7 @@ export interface Book {
   description: string;
   price: number;
   featuredPicture: string;
+  listedById: string;
   listedOn: Date;
   pictures: string[];
 }

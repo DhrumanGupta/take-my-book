@@ -22,12 +22,10 @@ interface BookCreateProps {
   isbn: string;
   description: string;
   price: number;
-  pictures: string[];
 }
 
 interface BookUploadImageProps {
-  name: string;
-  type: string;
+  id: string;
 }
 
 interface ClientRequestState<T> {

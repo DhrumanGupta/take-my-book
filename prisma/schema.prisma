@@ -37,7 +37,7 @@ model Book {
   price               Int
   listedBy            User       @relation(fields: [listedById], references: [id])
   listedOn            DateTime   @default(now())
-  featuredPicture     String
+  featuredPicture     String?
   pictures            BookPicture[]
 }
 

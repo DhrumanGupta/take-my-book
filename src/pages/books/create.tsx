@@ -7,7 +7,8 @@ import TextAreaInputGroup from "components/TextAreaInputGroup";
 import { FormEventHandler, useState } from "react";
 import { Book } from "types/DTOs";
 import { BookCreateProps, ClientRequestState } from "types/requests";
-import { createBook, uploadImages } from "lib/apis/bookApi";
+import { createBook } from "lib/apis/bookApi";
+import Loading from "components/Loading";
 
 interface Params extends Omit<BookCreateProps, "pictures"> {
   pictures: File[];
@@ -20,7 +21,7 @@ interface FileUploadProps {
 
 const FileUpload: React.FC<FileUploadProps> = ({ files, setFiles }) => {
   return (
-    <div className="bg-gray-light rounded-md text-center w-full">
+    <div className="bg-gray-light rounded-md text-center w-full h-full">
       {files.length > 0 && (
         <span className="p-4">
           {files.map((file) => (
@@ -30,10 +31,7 @@ const FileUpload: React.FC<FileUploadProps> = ({ files, setFiles }) => {
       )}
       <label
         htmlFor="file-upload"
-        className={clsx(
-          "hover:cursor-pointer block font-bold p-4",
-          files.length > 0 ? "pt-12" : "pt-20"
-        )}
+        className={clsx("hover:cursor-pointer block font-bold p-4", "pt-12")}
       >
         <Plus className="w-1/6 h-min mx-auto mb-10 text-gray-darks" />
         Upload Images
@@ -56,14 +54,16 @@ const FileUpload: React.FC<FileUploadProps> = ({ files, setFiles }) => {
   );
 };
 
+const initialParams = {
+  title: "",
+  isbn: "",
+  description: "",
+  price: 0,
+  pictures: [],
+};
+
 function Create() {
-  const [params, setParams] = useState<Params>({
-    title: "",
-    isbn: "",
-    description: "",
-    price: 0,
-    pictures: [],
-  });
+  const [params, setParams] = useState<Params>(initialParams);
 
   const [request, setRequest] = useState<ClientRequestState<Book>>({
     data: undefined,
@@ -72,6 +72,15 @@ function Create() {
   });
 
   const setPictures = (files: File[]) => {
+    const error = "Please select at most 3 files";
+    if (files.length > 3) {
+      setRequest({ error, loading: false });
+      return;
+    }
+
+    if (request.error === error)
+      setRequest({ error: undefined, loading: false });
+
     setParams((old) => ({
       ...old,
       pictures: files,
@@ -85,6 +94,10 @@ function Create() {
 
     const { title, isbn, description, price, pictures } = params;
     if (!title || !isbn || !description || !price || pictures.length <= 0) {
+      setRequest({
+        loading: false,
+        error: "Please fill in all the fields",
+      });
       return;
     }
 
@@ -94,84 +107,101 @@ function Create() {
     });
 
     try {
-      const images = await uploadImages(pictures);
+      // const images = await uploadImages(pictures);
       const book = await createBook({
         title,
         isbn,
         description,
         price,
-        pictures: images,
+        pictures,
       });
 
       setRequest({
         data: book,
         loading: false,
       });
-    } catch (err) {
+
+      setParams(initialParams);
+    } catch (err: any) {
+      console.log(err);
       setRequest({
         data: undefined,
         loading: false,
-        error: err as string,
+        error: err.response.data.msg as string,
       });
     }
-
-    console.log(params);
   };
-
-  console.log(params.pictures);
 
   return (
     <>
-      <MetaDecorator
-        title="Create a listing"
-        description="BorrowMyBooks is a one-stop application for finding and listing IB-MYP and IBDP books. BorrowMyBooks simplifies the entire process and streamlines communication so you can find and list books faster."
-      />
-      <form
-        className="container-custom grid grid-cols-1 md:grid-cols-3 md:gap-8 py-6 md:py-2 lg:pt-12 lg:pb-24"
-        onSubmit={onSubmit}
-      >
-        {request.data && (
-          <p className="text-blue mb-3 text-center">
-            Listing successfully created!
-          </p>
-        )}
-        <FileUpload files={params.pictures} setFiles={setPictures} />
-        <br />
-
-        <InputGroup
-          type="text"
-          label="Title"
-          placeholder="Enter the title of the book"
-          value={params.title}
-          setValue={(val) => setParams((old) => ({ ...old, title: val }))}
+      {request.data && (
+        <p className="text-blue mb-3 text-center">
+          Listing successfully created!
+        </p>
+      )}
+      {request.loading && <Loading />}
+      {request.error && (
+        <p className="text-orange mb-3 text-center">{request.error}</p>
+      )}
+      <div className="container-custom block md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:h-full">
+        <MetaDecorator
+          title="Create a listing"
+          description="BorrowMyBooks is a one-stop application for finding and listing IB-MYP and IBDP books. BorrowMyBooks simplifies the entire process and streamlines communication so you can find and list books faster."
         />
 
-        <InputGroup
-          type="text"
-          label="ISBN"
-          placeholder="Enter the ISBN of the book"
-          value={params.isbn}
-          setValue={(val) => setParams((old) => ({ ...old, isbn: val }))}
-        />
+        <div className="hidden md:block max-h-[90%]">
+          <FileUpload files={params.pictures} setFiles={setPictures} />
+        </div>
+        <form
+          className="flex flex-col py-6 md:py-2 lg:pt-12 lg:pb-24 lg:col-span-2"
+          onSubmit={onSubmit}
+        >
+          <div className="mb-10 md:hidden md:mb-0 max-h-64">
+            <FileUpload files={params.pictures} setFiles={setPictures} />
+          </div>
+          {/* <br /> */}
 
-        <InputGroup
-          type="text"
-          label="Price"
-          placeholder="Enter the price of the book"
-          value={params.price}
-          setValue={(val) => setParams((old) => ({ ...old, price: val }))}
-        />
+          {/* <div className="md:block"> */}
+          <InputGroup
+            type="text"
+            className="!mt-0"
+            label="Title"
+            placeholder="Enter the title of the book"
+            value={params.title}
+            setValue={(val) => setParams((old) => ({ ...old, title: val }))}
+          />
+          {/* </div> */}
 
-        <TextAreaInputGroup
-          label="Description"
-          placeholder="Enter the description of the book"
-          value={params.description}
-          setValue={(val) => setParams((old) => ({ ...old, description: val }))}
-        />
+          <InputGroup
+            type="text"
+            label="ISBN"
+            placeholder="Enter the ISBN of the book"
+            value={params.isbn}
+            setValue={(val) => setParams((old) => ({ ...old, isbn: val }))}
+          />
 
-        <PrimaryButton className="mt-6">Create Listing</PrimaryButton>
+          <InputGroup
+            type="number"
+            label="Price"
+            placeholder="Enter the price of the book"
+            value={params.price}
+            setValue={(val) =>
+              setParams((old) => ({ ...old, price: parseInt(val.toString()) }))
+            }
+          />
 
-        {/* <div className="md:hidden">
+          <TextAreaInputGroup
+            label="Description"
+            placeholder="Enter the description of the book"
+            value={params.description}
+            setValue={(val) =>
+              setParams((old) => ({ ...old, description: val }))
+            }
+          />
+
+          <PrimaryButton className="mt-6">Create Listing</PrimaryButton>
+
+          {/* <div className="md:hidden">
           <MobileFilter data={params} setData={setParams} />
         </div>
         <div className="hidden md:block">
@@ -181,7 +211,8 @@ function Create() {
         <div className="md:col-span-2 lg:col-span-3 xl:col-span-4">
           <BookList params={searchParams} />
         </div> */}
-      </form>
+        </form>
+      </div>
     </>
   );
 }

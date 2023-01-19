@@ -29,5 +29,5 @@ export const bookRoutes = {
     return `${bookBaseRoute}?${new URLSearchParams(params as any)}`;
   },
   create: `${bookBaseRoute}/`,
-  addImage: `${bookBaseRoute}/images`,
+  addImage: (id: string) => `${bookBaseRoute}/upload-image?id=${id}`,
 };

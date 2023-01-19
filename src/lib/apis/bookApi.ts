@@ -1,4 +1,3 @@
-import type { PresignedPost } from "aws-sdk/clients/s3";
 import axios from "axios";
 import { bookRoutes } from "data/routes";
 import { Book } from "types/DTOs";
@@ -7,6 +6,7 @@ import {
   BookSearchProps,
   BookUploadImageProps,
 } from "types/requests";
+import { UploadPictureResult } from "types/responses";
 import { AxiosResponse } from "./types";
 
 const getBook = async (id: string): Promise<Book | undefined> => {
@@ -37,54 +37,50 @@ const getBooks = async ({
   return resp.data.data!;
 };
 
+interface CreateBookProps extends Omit<BookCreateProps, "pictures"> {
+  pictures: File[];
+}
+
 const createBook = async ({
   title,
   isbn,
   description,
   price,
   pictures,
-}: BookCreateProps): Promise<Book | undefined> => {
+}: CreateBookProps): Promise<Book | undefined> => {
   const resp: AxiosResponse<Book> = await axios.post(bookRoutes.create, {
     title,
     isbn,
     description,
     price,
-    pictures,
+    // pictures,
   });
-  return resp.data.data;
+
+  const book = resp.data.data!;
+
+  console.log(book);
+
+  await uploadImages(pictures, book.id);
+
+  return book;
 };
 
-const uploadImages = async (files: File[]): Promise<string[]> => {
-  const fileData: BookUploadImageProps[] = files.map((file) => ({
-    name: file.name,
-    type: file.type,
-  }));
+const uploadImages = async (files: File[], bookId: string): Promise<void> => {
+  // const fileData: BookUploadImageProps[] = files.map((file) => ({
+  //   name: file.name,
+  //   type: file.type,
+  // }));
 
-  const resp: AxiosResponse<PresignedPost[]> = await axios.post(
-    bookRoutes.addImage,
-    fileData
-  );
-
-  const data = resp.data.data!;
-
-  for (let i = 0; i < files.length; i++) {
+  for (let file of files) {
     const formData = new FormData();
+    formData.append("files", file);
 
-    Object.entries({ ...data[i].fields, file: files[i] }).forEach(
-      ([key, value]) => {
-        formData.append(key, value as string);
-      }
-    );
-
-    await axios.post(data[i].url, formData, {
+    await axios.post(bookRoutes.addImage(bookId), formData, {
       headers: {
-        "Content-Type": files[i].type,
-        "Access-Control-Allow-Origin": "*",
+        "Content-Type": "multipart/form-data",
       },
     });
   }
-
-  return data.map((d) => d.url);
 };
 
-export { getBook, getBooks, createBook, uploadImages };
+export { getBook, getBooks, createBook };

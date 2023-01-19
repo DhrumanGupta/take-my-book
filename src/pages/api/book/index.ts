@@ -65,7 +65,7 @@ const createBook = async (
   res: ApiResponse<Book>,
   user: User
 ) => {
-  const { title, isbn, description, price, pictures } = req.body;
+  const { title, isbn, description, price } = req.body;
 
   if (!title || title.length < 4) {
     return res.status(400).send({ code: 400, msg: "Title too short" });
@@ -83,33 +83,45 @@ const createBook = async (
     return res.status(400).send({ code: 400, msg: "Price too low" });
   }
 
-  if (!pictures || pictures.length <= 0) {
-    return res.status(400).send({ code: 400, msg: "No pictures provided" });
-  }
+  // if (!pictures || pictures.length <= 0) {
+  //   return res.status(400).send({ code: 400, msg: "No pictures provided" });
+  // }
 
-  for (let picture of pictures) {
-    const isUrl = picture.match(
-      /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
-    );
+  // if (pictures.length > 3) {
+  //   return res
+  //     .status(400)
+  //     .send({ code: 400, msg: "Too many pictures provided" });
+  // }
 
-    const endsWith =
-      picture.endsWith(".jpg") ||
-      picture.endsWith(".png") ||
-      picture.endsWith(".jpeg");
+  // for (let picture of pictures) {
+  //   // const isUrl = picture.match(
+  //   //   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
+  //   // );
 
-    if (!isUrl || !endsWith) {
-      return res
-        .status(400)
-        .send({ code: 400, msg: "Invalid picture url provided" });
-    }
-  }
+  //   const isBase64 =
+  //     picture.startsWith("data:image") &&
+  //     picture.match(
+  //       /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/
+  //     );
+
+  //   // const endsWith =
+  //   //   picture.endsWith(".jpg") ||
+  //   //   picture.endsWith(".png") ||
+  //   //   picture.endsWith(".jpeg");
+
+  //   if (!isBase64) {
+  //     return res
+  //       .status(400)
+  //       .send({ code: 400, msg: "Invalid picture format provided" });
+  //   }
+  // }
 
   const book = await createBookDb({
     title,
     description,
     isbn,
     price,
-    pictures,
+    // pictures,
     listedById: user.id,
   });
 
