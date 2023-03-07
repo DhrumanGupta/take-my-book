@@ -1,18 +1,18 @@
-import type { NextPage } from "next";
-import MetaDecorator from "components/MetaDecorator";
+"use client";
+
 import useSwrInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 import { bookRoutes } from "data/routes";
-import { getBooks as getBooksDb } from "lib/apis/bookApi";
 import { BookSearchProps } from "types/requests";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import Loading from "components/Loading";
-import BookListingCard from "components/listings/BookListingCard";
+import BookListingCard from "components/books/BookListingCard";
 import SlideDown from "react-slidedown";
 import InputGroup from "components/InputGroup";
 import clsx from "clsx";
 import { BookQueryResult } from "types/responses";
 import axios from "axios";
 import { SecondaryButton } from "components/Button";
+import { NextPage } from "next";
 
 interface FilterProps {
   data: BookSearchProps;
@@ -143,8 +143,14 @@ const BookList = ({ params }: { params: BookSearchProps }) => {
       shouldRetryOnError: true,
     });
 
+  console.log(`Data: ${data}`);
+  console.log(`Error: ${error}`);
+  console.log(`Size: ${size}`);
+  console.log(`isLoading: ${isLoading}`);
+
   if (isLoading) return <Loading />;
-  if (error) return <p className="text-red">{error}</p>;
+  if (error)
+    return <p className="text-red">{error.message ? error.message : error}</p>;
 
   return (
     <>
@@ -176,7 +182,7 @@ const BookList = ({ params }: { params: BookSearchProps }) => {
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data.data);
 
-const Books: NextPage = () => {
+const Books = () => {
   const [params, setParams] = useState<BookSearchProps>({
     isbn: "",
     search: "",
@@ -196,10 +202,6 @@ const Books: NextPage = () => {
 
   return (
     <>
-      <MetaDecorator
-        title="Book Listings"
-        description="BorrowMyBooks is a one-stop application for finding and listing IB-MYP and IBDP books. BorrowMyBooks simplifies the entire process and streamlines communication so you can find and list books faster."
-      />
       <main className="container-custom grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8 py-6 md:py-2 lg:pt-12 lg:pb-24">
         <div className="md:hidden">
           <MobileFilter data={params} setData={setParams} />

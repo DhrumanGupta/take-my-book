@@ -1,10 +1,20 @@
-version: '2'
+version: "2"
 services:
   database:
-    image: 'postgres:13'
+    image: "postgres:13"
     environment:
       - POSTGRES_USER=berlm
       - POSTGRES_PASSWORD=berlm
       - POSTGRES_DB=takemybook_db
     ports:
-      - '5432:5432'
+      - "5432:5432"
+    volumes:
+      - /home/berlm/docker/var/lib/postgresql:/var/lib/postgresql
+  # redis:
+  #   image: redis:latest
+  #   restart: always
+  #   environment:
+  #     - ALLOW_EMPTY_PASSWORD=yes
+  #   ports:
+  #     - "6379:6379"
+  # command: redis-server --save 20 1 --loglevel warning --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81

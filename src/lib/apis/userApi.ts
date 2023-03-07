@@ -11,6 +11,11 @@ const getUser = async (): Promise<User | undefined> => {
   return resp.data.data;
 };
 
+const getUserById = async (id: string): Promise<User | undefined> => {
+  const resp: AxiosResponse<User> = await axios.get(authRoutes.userById(id));
+  return resp.data.data;
+};
+
 const logout = async () => {
   await axios.post(authRoutes.logout);
 };
@@ -35,4 +40,23 @@ const register = async ({ name, email, password }: UserSignupProps) => {
   return resp.data.data;
 };
 
-export { getUser, login, register, logout };
+const updatePhoto = async (file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const resp: AxiosResponse<User> = await axios.put(
+    authRoutes.setImage,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  const user = resp.data.data!;
+
+  return user;
+};
+
+export { getUser, getUserById, login, register, logout, updatePhoto };

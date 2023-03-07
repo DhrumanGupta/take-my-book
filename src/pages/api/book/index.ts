@@ -1,3 +1,4 @@
+import { IncomingForm } from "formidable";
 import authorizedRoute from "lib/middlewares/authorizedRoute";
 import {
   getBooks as getBooksDb,
@@ -7,14 +8,17 @@ import type { NextApiRequest, NextApiHandler } from "next";
 import { Book, User } from "types/DTOs";
 import { BookCreateProps, BookSearchProps } from "types/requests";
 import { ApiResponse, BookQueryResult } from "types/responses";
+import { File } from "formidable";
+import mv from "mv";
 
 // @ts-ignore
 interface GetBookRequest extends NextApiRequest {
   query: BookSearchProps;
 }
 
+// @ts-ignore
 interface CreateBookRequest extends NextApiRequest {
-  body: BookCreateProps;
+  query: BookCreateProps;
 }
 
 function isNumeric(str: String) {
@@ -60,12 +64,18 @@ const getBooks = async (
   });
 };
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 const createBook = async (
   req: CreateBookRequest,
   res: ApiResponse<Book>,
   user: User
 ) => {
-  const { title, isbn, description, price } = req.body;
+  const { title, isbn, description, price } = req.query;
 
   if (!title || title.length < 4) {
     return res.status(400).send({ code: 400, msg: "Title too short" });
@@ -79,53 +89,74 @@ const createBook = async (
     return res.status(400).send({ code: 400, msg: "Description too short" });
   }
 
-  if (!price || price < 0 || typeof price !== "number") {
+  const priceInt = parseInt(price);
+
+  if (!priceInt || priceInt < 0) {
     return res.status(400).send({ code: 400, msg: "Price too low" });
   }
 
-  // if (!pictures || pictures.length <= 0) {
-  //   return res.status(400).send({ code: 400, msg: "No pictures provided" });
-  // }
+  let pictures: string[] = [];
 
-  // if (pictures.length > 3) {
-  //   return res
-  //     .status(400)
-  //     .send({ code: 400, msg: "Too many pictures provided" });
-  // }
+  try {
+    pictures = await new Promise((resolve, reject) => {
+      const form = new IncomingForm({
+        maxFileSize: 4 * 1024 * 1024, // 4mb,
+        multiples: true,
+        maxFiles: 3,
+      });
 
-  // for (let picture of pictures) {
-  //   // const isUrl = picture.match(
-  //   //   /(http(s)?:\/\/.)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/g
-  //   // );
+      // form.multiples = false;
 
-  //   const isBase64 =
-  //     picture.startsWith("data:image") &&
-  //     picture.match(
-  //       /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/
-  //     );
+      form.parse(req, (err, fields, files) => {
+        if (err) return reject(err);
+        const allFiles = files.files;
+        // console.log(fields, files);
+        const res: string[] = [];
+        const parseFile = (file: File): string => {
+          const oldPath = file.filepath;
+          const fileName =
+            file.newFilename + "." + file.originalFilename?.split(".").at(-1);
+          var newPath = `./public/images/user-content/${fileName}`;
+          mv(oldPath, newPath, function (err) {
+            reject(err);
+          });
+          return `/images/user-content/${fileName}`;
+        };
 
-  //   // const endsWith =
-  //   //   picture.endsWith(".jpg") ||
-  //   //   picture.endsWith(".png") ||
-  //   //   picture.endsWith(".jpeg");
+        if (Array.isArray(allFiles)) {
+          for (let file of allFiles) {
+            res.push(parseFile(file));
+          }
+        } else {
+          res.push(parseFile(allFiles));
+        }
 
-  //   if (!isBase64) {
-  //     return res
-  //       .status(400)
-  //       .send({ code: 400, msg: "Invalid picture format provided" });
-  //   }
-  // }
+        resolve(res);
+      });
+    });
+
+    // await addImage({ id, url: path });
+  } catch (err) {
+    console.log(err);
+    res.status(500).send({ code: 500, msg: "Retry" });
+  }
+
+  if (pictures.length <= 0) {
+    return res.status(400).send({ code: 400, msg: "No pictures provided!" });
+  }
 
   const book = await createBookDb({
     title,
     description,
     isbn,
-    price,
-    // pictures,
+    price: priceInt,
+    pictures,
     listedById: user.id,
   });
 
-  return res.json({ code: 200, msg: "success", data: book });
+  // console.log(book);
+
+  return res.status(200).send({ code: 200, msg: "success", data: book });
 };
 
 const route: NextApiHandler = async (req, res) => {
@@ -138,6 +169,7 @@ const route: NextApiHandler = async (req, res) => {
 
 const methods = {
   GET: getBooks,
+  // @ts-ignore
   POST: authorizedRoute(createBook),
 };
 

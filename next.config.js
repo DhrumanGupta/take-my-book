@@ -8,6 +8,9 @@ const nextConfig = {
       `${process.env.BUCKET_NAME}.s3.amazonaws.com`,
     ],
   },
+  experimental: {
+    appDir: true,
+  },
 };
 
 module.exports = nextConfig;

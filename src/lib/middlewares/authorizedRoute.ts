@@ -15,10 +15,19 @@ const authorizedRoute = (
       return res.status(401).send({ msg: "Not logged in" });
     }
 
-    const user = await prisma.user.findFirst({
-      where: { id: req.session.user?.id },
-      select: { id: true, name: true, email: true, role: true },
+    const user: User | null = await prisma.user.findFirst({
+      where: { id: req.session.user!.id },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        photoUrl: true,
+      },
     });
+
+    // console.log(`id: ${req.session.user.id}`);
+    // console.log(`user: ${user}`);
 
     if (!user) {
       req.session.destroy();

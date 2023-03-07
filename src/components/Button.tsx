@@ -5,10 +5,16 @@ export interface IButtonProps {
   onClick?: (event: any) => any;
   children?: React.ReactNode;
   className?: string;
+  disabled?: boolean;
 }
 
 function BaseButton(props: IButtonProps) {
-  const className = clsx("px-5 py-3 rounded-xl duration-100", props.className);
+  const className = clsx(
+    "px-5 py-3 rounded-xl duration-100",
+    props.className,
+    props.disabled === true &&
+      "hover:bg-gray-dark bg-gray-dark hover:cursor-not-allowed"
+  );
   return (
     <button onClick={props.onClick} className={className}>
       {props.children}

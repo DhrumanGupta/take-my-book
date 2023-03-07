@@ -8,14 +8,15 @@ import {
 } from "types/requests";
 import { UploadPictureResult } from "types/responses";
 import { AxiosResponse } from "./types";
+import { Response } from "types/responses";
 
 const getBook = async (id: string): Promise<Book | undefined> => {
-  try {
-    const resp: AxiosResponse<Book> = await axios.get(bookRoutes.getFromId(id));
-    return resp.data.data;
-  } catch (e) {
-    return undefined;
-  }
+  // try {
+  const resp: AxiosResponse<Book> = await axios.get(bookRoutes.getFromId(id));
+  return resp.data.data;
+  // } catch (e) {
+  //   return undefined;
+  // }
 };
 
 const getBooks = async ({
@@ -48,19 +49,33 @@ const createBook = async ({
   price,
   pictures,
 }: CreateBookProps): Promise<Book | undefined> => {
-  const resp: AxiosResponse<Book> = await axios.post(bookRoutes.create, {
+  const url = new URL(window.location.origin);
+  const data = {
     title,
     isbn,
     description,
     price,
-    // pictures,
+  };
+
+  Object.entries(data).forEach(([key, value]) => {
+    url.searchParams.append(key, value.toString());
   });
+  // alert();
+  const formData = new FormData();
+  for (let file of pictures) {
+    formData.append("files", file);
+  }
+  const resp: AxiosResponse<Book> = await axios.post(
+    `${bookRoutes.create}?${url.searchParams.toString()}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
 
   const book = resp.data.data!;
-
-  console.log(book);
-
-  await uploadImages(pictures, book.id);
 
   return book;
 };
@@ -71,8 +86,8 @@ const uploadImages = async (files: File[], bookId: string): Promise<void> => {
   //   type: file.type,
   // }));
 
+  const formData = new FormData();
   for (let file of files) {
-    const formData = new FormData();
     formData.append("files", file);
 
     await axios.post(bookRoutes.addImage(bookId), formData, {
@@ -83,4 +98,11 @@ const uploadImages = async (files: File[], bookId: string): Promise<void> => {
   }
 };
 
-export { getBook, getBooks, createBook };
+const getBooksForUser = async (id: string): Promise<Book[] | undefined> => {
+  const resp: AxiosResponse<Book[]> = await axios.get(
+    bookRoutes.getForUser(id)
+  );
+  return resp.data.data;
+};
+
+export { getBook, getBooks, createBook, getBooksForUser };

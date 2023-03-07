@@ -12,6 +12,8 @@ export const authRoutes = {
   logout: `${authBaseRoute}/logout`,
   register: `${authBaseRoute}/register`,
   user: `${authBaseRoute}/user`,
+  userById: (id: string) => `${authBaseRoute}/${id}`,
+  setImage: `${authBaseRoute}/photo`,
 };
 
 const bookBaseRoute = `${basePath}/book`;
@@ -30,4 +32,16 @@ export const bookRoutes = {
   },
   create: `${bookBaseRoute}/`,
   addImage: (id: string) => `${bookBaseRoute}/upload-image?id=${id}`,
+  getForUser: (id: string) => `${bookBaseRoute}/user/${id}`,
+};
+
+const chatBaseRoute = `${basePath}/chat`;
+export const chatRoutes = {
+  getAllSessions: `${chatBaseRoute}/sessions`,
+  getSession: (userId: string) => `${chatBaseRoute}/session?userId=${userId}`,
+};
+
+const adminBaseRoute = `${basePath}/admin`;
+export const adminRoutes = {
+  logs: `${adminBaseRoute}/logs`,
 };

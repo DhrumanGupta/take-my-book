@@ -1,33 +1,32 @@
-import type { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import Card from "components/Card";
 import InfoCard from "components/home/InfoCard";
 import Message from "components/icons/Message";
 import Search from "components/icons/Search";
 import Verified from "components/icons/Verified";
-import MetaDecorator from "components/MetaDecorator";
 
-const Home: NextPage = () => {
+const Home = () => {
   return (
     <>
-      <MetaDecorator description="BorrowMyBooks is a one-stop application for finding and listing IBMYP and IBDP books. BorrowMyBooks simplifies the entire process and streamlines communication so you can find and list books faster." />
       <main className="container-custom grid grid-cols-1 pt-6 md:py-2 lg:pt-12 lg:pb-24 md:grid-cols-2">
         <div className="flex flex-col align-center justify-center">
           <h1 className="mb-1">Don&apos;t buy, borrow</h1>
           <p className="md:max-w-[90%] lg:max-w-[80%]">
             Buying new books every year is expensive and wasteful. BorrowMyBooks
             allows you to find and coordinate book pickups from other students.
-            Get started by <Link href="signup">signing up</Link>, or browsing
-            the <Link href="books">current listings</Link>.
+            Get started by <Link href="/signup">signing up</Link>, or browsing
+            the <Link href="/books">current listings</Link>.
           </p>
         </div>
+        {/* <Link href="/x">Test</Link> */}
         <div className="w-full h-96 md:h-112 relative">
           <Image
             src="/images/index/books.png"
             alt="IB Books"
-            layout="fill"
-            objectFit="contain"
+            className="object-contain"
+            fill={true}
+            // layout="fill"
+            // objectFit="contain"
           />
         </div>
       </main>

@@ -1,14 +1,19 @@
+"use client";
+
 import clsx from "clsx";
 import { PrimaryButton } from "components/Button";
 import Plus from "components/icons/Plus";
 import InputGroup from "components/InputGroup";
 import MetaDecorator from "components/MetaDecorator";
 import TextAreaInputGroup from "components/TextAreaInputGroup";
-import { FormEventHandler, useState } from "react";
+import { FormEventHandler, useEffect, useState } from "react";
 import { Book } from "types/DTOs";
 import { BookCreateProps, ClientRequestState } from "types/requests";
 import { createBook } from "lib/apis/bookApi";
 import Loading from "components/Loading";
+import { useRouter } from "next/navigation";
+import { ProtectedPage } from "components/Auth";
+// import { useSocket } from "lib/SocketContext";
 
 interface Params extends Omit<BookCreateProps, "pictures"> {
   pictures: File[];
@@ -58,7 +63,7 @@ const initialParams = {
   title: "",
   isbn: "",
   description: "",
-  price: 0,
+  price: "0",
   pictures: [],
 };
 
@@ -124,16 +129,35 @@ function Create() {
       setParams(initialParams);
     } catch (err: any) {
       console.log(err);
+      let error = "";
+      if (err.response?.data) {
+        error = err.response.data.msg as string;
+      } else {
+        error = err.message;
+      }
       setRequest({
         data: undefined,
         loading: false,
-        error: err.response.data.msg as string,
+        error,
       });
     }
   };
 
+  const router = useRouter();
+
+  useEffect(() => {
+    if (request.data) {
+      router.push(`/books/${request.data.id}`);
+    }
+  }, [request, router]);
+
   return (
     <>
+      <MetaDecorator
+        title="Create a listing"
+        description="BorrowMyBooks is a one-stop application for finding and listing IB-MYP and IBDP books. BorrowMyBooks simplifies the entire process and streamlines communication so you can find and list books faster."
+      />
+
       {request.data && (
         <p className="text-blue mb-3 text-center">
           Listing successfully created!
@@ -144,11 +168,6 @@ function Create() {
         <p className="text-orange mb-3 text-center">{request.error}</p>
       )}
       <div className="container-custom block md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 md:h-full">
-        <MetaDecorator
-          title="Create a listing"
-          description="BorrowMyBooks is a one-stop application for finding and listing IB-MYP and IBDP books. BorrowMyBooks simplifies the entire process and streamlines communication so you can find and list books faster."
-        />
-
         <div className="hidden md:block max-h-[90%]">
           <FileUpload files={params.pictures} setFiles={setPictures} />
         </div>
@@ -186,7 +205,7 @@ function Create() {
             placeholder="Enter the price of the book"
             value={params.price}
             setValue={(val) =>
-              setParams((old) => ({ ...old, price: parseInt(val.toString()) }))
+              setParams((old) => ({ ...old, price: val.toString() }))
             }
           />
 
@@ -217,6 +236,10 @@ function Create() {
   );
 }
 
-Create.isProtected = true;
-
-export default Create;
+export default function Page() {
+  return (
+    <ProtectedPage>
+      <Create />
+    </ProtectedPage>
+  );
+}

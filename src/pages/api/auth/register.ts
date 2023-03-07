@@ -51,6 +51,7 @@ const handler = async (req: ExtendedNextApiRequest, res: ApiResponse<User>) => {
       name: true,
       id: true,
       role: true,
+      photoUrl: true,
     },
   });
 

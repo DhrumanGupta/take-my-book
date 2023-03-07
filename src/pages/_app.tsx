@@ -3,6 +3,7 @@ import "../styles/app.css";
 import Navbar from "components/Navbar";
 import { ProtectedPage, AnonymousPage } from "components/Auth";
 import { AppProps } from "next/app";
+import { SocketProvider } from "lib/SocketContext";
 
 function MyApp({ Component, pageProps }: AppProps) {
   // @ts-ignore
@@ -17,7 +18,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   }
 
   return (
-    <>
+    <SocketProvider>
       <Navbar />
       {isProtected && (
         <ProtectedPage>
@@ -30,7 +31,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         </AnonymousPage>
       )}
       {!isAnonymous && !isProtected && <Component {...pageProps} />}
-    </>
+    </SocketProvider>
   );
 }
 

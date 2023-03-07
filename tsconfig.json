@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -16,20 +20,40 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "lib/*": ["./src/lib/*"],
-      "pages/*": ["./src/pages/*"],
-      "hooks/*": ["./src/hooks/*"],
-      "data/*": ["./src/data/*"],
-      "types/*": ["./src/types/*"],
-      "components/*": ["./src/components/*"]
-    }
+      "lib/*": [
+        "./src/lib/*"
+      ],
+      "pages/*": [
+        "src/components/app/*"
+      ],
+      "hooks/*": [
+        "./src/hooks/*"
+      ],
+      "data/*": [
+        "./src/data/*"
+      ],
+      "types/*": [
+        "./src/types/*"
+      ],
+      "components/*": [
+        "./src/components/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     "next.config.js",
-    "src/components/UI/Loading.jsx"
+    "src/components/UI/Loading.jsx",
+    ".next/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

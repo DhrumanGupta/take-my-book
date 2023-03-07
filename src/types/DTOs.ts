@@ -3,6 +3,22 @@ export interface User {
   email: string;
   id: string;
   role: "USER" | "ADMIN";
+  photoUrl?: string | null;
+}
+
+export interface ChatMessage {
+  id: string;
+  fromId: string;
+  chatSessionId: string;
+  message: string;
+  createdAt: number;
+}
+
+export interface ChatSession {
+  id: string;
+  users: User[];
+  messages: Omit<ChatMessage, "chatSessionId">[];
+  lastMessagedAt: number;
 }
 
 export interface Book {
@@ -13,6 +29,6 @@ export interface Book {
   price: number;
   featuredPicture: string;
   listedById: string;
-  listedOn: Date;
+  listedOn: number;
   pictures: string[];
 }

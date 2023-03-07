@@ -1,12 +1,5 @@
-import type { NextPage } from "next";
-// import Image from "next/image";
-import Link from "next/link";
-import { Dispatch, FC } from "react";
-// import Card from "src/components/Card";
-// import InfoCard from "components/home/InfoCard";
-// import Message from "components/icons/Message";
-// import Search from "components/icons/Search";
-// import Verified from "components/icons/Verified";
+"use client";
+import { FC } from "react";
 import Loading from "components/Loading";
 import { useReducer } from "react";
 import produce from "immer";
@@ -19,6 +12,7 @@ import useUser from "hooks/useUser";
 import type { User } from "types/DTOs";
 import { AxiosError } from "axios";
 import { Response } from "types/responses";
+import { AnonymousPage } from "components/Auth";
 
 const initialState: State = {
   state: "signup",
@@ -107,7 +101,7 @@ const Toggle: FC<Props> = ({ children, func }) => {
   );
 };
 
-const Home: NextPage = () => {
+const Home = () => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const toggle = () => {
@@ -146,7 +140,7 @@ const Home: NextPage = () => {
   };
 
   return (
-    <>
+    <AnonymousPage>
       <MetaDecorator
         title="Sign Up / Login"
         description="BorrowMyBooks is a one-stop application for finding and listing IB-MYP and IBDP books. BorrowMyBooks simplifies the entire process and streamlines communication so you can find and list books faster."
@@ -223,11 +217,8 @@ const Home: NextPage = () => {
           /> */}
         </div>
       </main>
-    </>
+    </AnonymousPage>
   );
 };
-
-// @ts-ignore
-Home.isAnonymous = true;
 
 export default Home;

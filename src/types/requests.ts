@@ -21,7 +21,7 @@ interface BookCreateProps {
   title: string;
   isbn: string;
   description: string;
-  price: number;
+  price: string;
 }
 
 interface BookUploadImageProps {

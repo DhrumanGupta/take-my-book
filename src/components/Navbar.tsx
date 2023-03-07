@@ -54,6 +54,14 @@ const PROTECTED_ROUTES: Route[] = [
   },
 ];
 
+const ADMIN_ROUTES: Route[] = [
+  {
+    path: "/logs",
+    label: "Logs",
+    primary: true,
+  },
+];
+
 const NavItem = ({
   to,
   className,
@@ -64,15 +72,21 @@ const NavItem = ({
   children: React.ReactNode;
 }) => {
   return (
-    <Link href={to}>
-      <a
+    <Link
+      href={to}
+      className={clsx(
+        "px-5 py-3 rounded-xl font-semibold duration-100 !no-underline text-xs lg:text-sm",
+        className
+      )}
+    >
+      {/* <a
         className={clsx(
           "px-5 py-3 rounded-xl font-semibold duration-100 !no-underline text-xs lg:text-sm",
           className
         )}
-      >
-        {children}
-      </a>
+      > */}
+      {children}
+      {/* </a> */}
     </Link>
   );
 };
@@ -80,17 +94,17 @@ const NavItem = ({
 const MobileMenuList: FC = () => {
   const { isExpanded } = useMenuButtonContext();
 
-  const { loggedIn, mutate } = useUser();
+  const { loggedIn, mutate, user } = useUser();
 
   useEffect(() => {
     if (isExpanded) {
       // don't use overflow-hidden, as that toggles the scrollbar and causes layout shift
-      document.body.classList.add("fixed");
+      // document.body.classList.add("fixed");
       document.body.classList.add("overflow-y-scroll");
       // alternatively, get bounding box of the menu, and set body height to that.
       document.body.style.height = "100vh";
     } else {
-      document.body.classList.remove("fixed");
+      // document.body.classList.remove("fixed");
       document.body.classList.remove("overflow-y-scroll");
       document.body.style.removeProperty("height");
     }
@@ -119,16 +133,20 @@ const MobileMenuList: FC = () => {
             }}
             className="flex h-full flex-col overflow-y-scroll border-t border-gray-dark bg-white duration-500 w-screen"
           >
-            <MenuItems className="flex flex-col b-0">
-              <Link href={"/"}>
-                <MenuLink as={"a"} className="mobile-navbar-item">
+            <MenuItems className="flex flex-col b-0 !no-underline">
+              <Link href={"/"} className={"no-underline"}>
+                <MenuLink as={"p"} className="mobile-navbar-item">
                   Home
                 </MenuLink>
               </Link>
 
               {ROUTES.map((route) => (
-                <Link key={route.path} href={route.path}>
-                  <MenuLink as={"a"} className="mobile-navbar-item">
+                <Link
+                  key={route.path}
+                  href={route.path}
+                  className={"no-underline"}
+                >
+                  <MenuLink as={"p"} className="mobile-navbar-item">
                     {route.label}
                   </MenuLink>
                 </Link>
@@ -136,8 +154,12 @@ const MobileMenuList: FC = () => {
 
               {!loggedIn &&
                 ANONYMOUS_ROUTES.map((route, index) => (
-                  <Link key={route.path} href={route.path}>
-                    <MenuLink as={"a"} className="mobile-navbar-item">
+                  <Link
+                    key={route.path}
+                    href={route.path}
+                    className={"no-underline"}
+                  >
+                    <MenuLink as={"p"} className="mobile-navbar-item">
                       {route.label}
                     </MenuLink>
                   </Link>
@@ -145,8 +167,26 @@ const MobileMenuList: FC = () => {
 
               {loggedIn &&
                 PROTECTED_ROUTES.map((route, index) => (
-                  <Link key={route.path} href={route.path}>
-                    <MenuLink as={"a"} className="mobile-navbar-item">
+                  <Link
+                    key={route.path}
+                    href={route.path}
+                    className={"no-underline"}
+                  >
+                    <MenuLink as={"p"} className="mobile-navbar-item">
+                      {route.label}
+                    </MenuLink>
+                  </Link>
+                ))}
+
+              {loggedIn &&
+                user!.role === "ADMIN" &&
+                ADMIN_ROUTES.map((route, index) => (
+                  <Link
+                    key={route.path}
+                    href={route.path}
+                    className={"no-underline"}
+                  >
+                    <MenuLink as={"p"} className="mobile-navbar-item">
                       {route.label}
                     </MenuLink>
                   </Link>
@@ -156,6 +196,7 @@ const MobileMenuList: FC = () => {
                 <PrimaryButton
                   className="text-sm font-semibold w-[90vw] mx-auto mt-5"
                   onClick={() => {
+                    // @ts-ignore
                     logout().then(() => mutate(null));
                   }}
                 >
@@ -197,13 +238,13 @@ const MobileMenu: FC = () => (
 );
 
 const DesktopBar: FC = () => {
-  const { loggedIn, mutate } = useUser();
+  const { loggedIn, mutate, user } = useUser();
   return (
-    <div className="hidden lg:flex child:ml-5 first:m-0 justify-end py-5 pr-5">
-      <Link href="/">
-        <div className="flex m-0 mr-auto hover:cursor-pointer">
+    <div className="hidden lg:flex child:ml-3 first:m-0 justify-end py-5 pr-5">
+      <Link href="/" className="!no-underline text-black block m-0 mr-auto">
+        <div className="flex hover:cursor-pointer">
           <div className="w-10 m-0 relative h-10">
-            <Image src="/logo.png" alt="Book logo" layout="fill" />
+            <Image src="/logo.png" alt="Book logo" fill />
           </div>
           <h2 className="my-auto ml-2">Borrow My Books</h2>
         </div>
@@ -249,10 +290,28 @@ const DesktopBar: FC = () => {
             {route.label}
           </NavItem>
         ))}
+
+      {loggedIn &&
+        user.role === "ADMIN" &&
+        ADMIN_ROUTES.map((route, index) => (
+          <NavItem
+            key={route.path}
+            to={route.path}
+            className={
+              route.primary
+                ? "bg-orange !text-white hover:bg-darkOrange"
+                : "bg-white border-2 border-black !text-black hover:bg-gray-light"
+            }
+          >
+            {route.label}
+          </NavItem>
+        ))}
+
       {loggedIn && (
         <PrimaryButton
           className="text-xs lg:text-sm font-semibold"
           onClick={() => {
+            // @ts-ignore
             logout().then(() => mutate(null));
           }}
         >

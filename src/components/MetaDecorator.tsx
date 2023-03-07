@@ -1,29 +1,31 @@
-import React from 'react'
-import Head from 'next/head'
+import React from "react";
+import Head from "next/head";
 
 const makeTitle = (title: string, name: string) =>
-  title === name ? title : `${title} – ${name}`
+  title === name ? title : `${title} – ${name}`;
 
 interface MetaDecoratorProps {
-  name?: string
-  title?: string
-  description: string
-  image?: string
-  color?: string
-  manifest?: string
-  children?: React.ReactNode
+  name?: string;
+  title?: string;
+  description: string;
+  image?: string;
+  color?: string;
+  manifest?: string;
+  children?: React.ReactNode;
+  isHeadFile?: boolean;
 }
 
 const MetaDecorator: React.FC<MetaDecoratorProps> = ({
-  name = 'BorrowMyBooks', // site name
-  title = 'BorrowMyBooks', // page title
+  name = "BorrowMyBooks", // site name
+  title = "BorrowMyBooks", // page title
   description,
   image,
-  color = '#1f2028',
-  manifest = '/manifest.json',
+  color = "#1f2028",
+  manifest = "/manifest.json",
+  isHeadFile = false,
   children,
 }) => (
-  <Head>
+  <>
     <meta key="og_locale" property="og:locale" content="en_US" />
     <meta key="og_type" property="og:type" content="website" />
     <meta key="og_site" property="og:site_name" content={name} />
@@ -56,7 +58,7 @@ const MetaDecorator: React.FC<MetaDecoratorProps> = ({
     <meta key="tile_color" name="msapplication-TileColor" content={color} />
     {manifest && <link key="manifest" rel="manifest" href={manifest} />}
     {children}
-  </Head>
-)
+  </>
+);
 
-export default MetaDecorator
+export default MetaDecorator;

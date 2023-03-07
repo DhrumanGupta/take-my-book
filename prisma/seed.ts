@@ -1,4 +1,4 @@
-import { PrismaClient, User } from "@prisma/client";
+import { PrismaClient, Role, User } from "@prisma/client";
 import { generateHashWithSalt } from "../src/lib/crypto";
 
 const prisma = new PrismaClient();
@@ -7,10 +7,12 @@ const createUser = async ({
   password,
   email,
   name,
+  role = Role.USER,
 }: {
   password: string;
   email: string;
   name: string;
+  role?: Role;
 }) => {
   const { salt, hash } = generateHashWithSalt(password);
   return await prisma.user.upsert({
@@ -21,11 +23,12 @@ const createUser = async ({
       name,
       salt,
       passwordHash: hash,
+      role,
     },
   });
 };
 
-async function main() {
+async function main_() {
   const user = await createUser({
     email: "test@gmail.com",
     password: "test1234",
@@ -116,11 +119,26 @@ async function main() {
       )
     );
   };
-  
+
   await createBooks();
   await createBooks();
   await createBooks();
   await createBooks();
+}
+
+async function main() {
+  await createUser({
+    email: "dhruman.basketball@gmail.com",
+    name: "Dhruman Gupta",
+    password: "test1234",
+  });
+
+  await createUser({
+    email: "admin@gmail.com",
+    name: "Admin User",
+    password: "test1234",
+    role: Role.ADMIN,
+  });
 }
 
 main()

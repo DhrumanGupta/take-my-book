@@ -26,7 +26,7 @@ function transformBook(book: BookWithPictures): Book {
     description: book.description,
     price: book.price,
     featuredPicture: book.featuredPicture || "",
-    listedOn: book.listedOn,
+    listedOn: book.listedOn.getTime(),
     pictures: book.pictures.map((picture) => picture.url),
     listedById: book.listedById,
   };
@@ -194,4 +194,17 @@ async function addImage({ id, url }: { id: string; url: string }) {
   });
 }
 
-export { getBooks, getBook, createBook, addImage };
+async function getBooksFromUser({ id }: { id: string }) {
+  const books = await prisma.book.findMany({
+    where: {
+      listedById: id,
+    },
+    include: {
+      pictures: true,
+    },
+  });
+
+  return books.map(transformBook);
+}
+
+export { getBooks, getBook, createBook, addImage, getBooksFromUser };

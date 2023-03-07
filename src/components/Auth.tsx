@@ -1,5 +1,5 @@
 import useUser from "hooks/useUser";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import Loading from "./Loading";
 

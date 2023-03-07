@@ -29,11 +29,12 @@ const handler = async (req: ExtendedNextApiRequest, res: ApiResponse<User>) => {
     return res.status(403).send({ code: 403, msg: "Invalid credentials" });
   }
 
-  const dto = {
+  const dto: User = {
     name: user.name,
     email: user.email,
     id: user.id,
     role: user.role,
+    photoUrl: user.photoUrl,
   };
 
   req.session.user = dto;
