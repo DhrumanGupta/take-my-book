@@ -37,7 +37,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       )}
     >
       {data!.length > 0 && (
-        <div className={clsx(!pathname?.endsWith("chat") && "hidden lg:block")}>
+        <div
+          className={clsx(
+            !pathname?.endsWith("chat") && "hidden lg:block",
+            "border-r"
+          )}
+        >
           {data!
             .sort((a, b) => (a.lastMessagedAt > b.lastMessagedAt ? -1 : 1))
             .map((session) => (

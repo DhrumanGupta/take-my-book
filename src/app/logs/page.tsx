@@ -28,7 +28,7 @@ const BookLink = ({ book, dataKey }: { book: Book; dataKey: string }) => {
   }
   return (
     <Link
-      href={`/book/${book.id}`}
+      href={`/books/${book.id}`}
       className="break-words no-underline text-black"
     >
       {el}
@@ -67,14 +67,7 @@ const Page = () => {
             <BookLink book={book} dataKey="price" />
             <BookLink book={book} dataKey="isbn" />
             <BookLink book={book} dataKey="listedOn" />
-            {/* <Link href={`/books/${book.id}`}>{book.title}</Link> */}
-            {/* <p className="break-words">Rs. {book.price}</p>
-            <p className="break-words">{book.isbn}</p>
-            <p className="break-words">
-              {new Date(book.listedOn).toLocaleDateString()}
-            </p> */}
           </Fragment>
-          // <div key={book.id} className={"border-t last:border-b grid "}></div>
         ))}
       </div>
     </div>

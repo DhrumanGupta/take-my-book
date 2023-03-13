@@ -45,6 +45,7 @@ const Profile = ({ user }: { user: User }) => {
       <input
         type="file"
         id="file"
+        accept="image/png, image/jpeg"
         ref={inputFile}
         style={{ display: "none" }}
         onChange={onFileUpload}
@@ -108,7 +109,7 @@ export default function Page({ params: { id } }: { params: { id: string } }) {
 
   return (
     <div className="grid md:flex-grow m-4 grid-cols-1 lg:grid-cols-3">
-      {userData && <Profile user={userData} mutate={mutateUser} />}
+      {userData && <Profile user={userData} />}
 
       <div className="lg:col-span-2 px-8">
         <h2>Listings</h2>
